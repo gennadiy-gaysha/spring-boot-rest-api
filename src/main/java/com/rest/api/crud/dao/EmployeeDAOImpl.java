@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public class EmployeeDAOImpl implements EmployeeDAO{
     // define field for EntityManager
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
     // set up constructor injection of the EntityManager bean
     @Autowired
