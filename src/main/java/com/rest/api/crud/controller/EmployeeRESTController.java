@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+// Controller LAYER
 @RestController
 @RequestMapping("/api")
 public class EmployeeRESTController {
@@ -25,6 +26,4 @@ public class EmployeeRESTController {
     public List<Employee> findAll(){
         return employeeDAO.findAll();
     }
-
-
 }

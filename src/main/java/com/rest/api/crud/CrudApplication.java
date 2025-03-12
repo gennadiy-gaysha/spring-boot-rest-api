@@ -14,5 +14,4 @@ public class CrudApplication {
 
 		SpringApplication.run(CrudApplication.class, args);
 	}
-
 }

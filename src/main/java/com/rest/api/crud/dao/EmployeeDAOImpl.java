@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+// DAO LAYER - acts as the data access layer for interacting with the database
+// to retrieve employee information
 @Repository
 public class EmployeeDAOImpl implements EmployeeDAO{
     // define field for EntityManager
