@@ -11,7 +11,7 @@ import java.util.List;
 // DAO LAYER - acts as the data access layer for interacting with the database
 // to retrieve employee information
 @Repository
-public class EmployeeDAOImpl implements EmployeeDAO{
+public class EmployeeDAOImpl implements EmployeeDAO {
     // define field for EntityManager
     private final EntityManager entityManager;
 
@@ -37,4 +37,30 @@ public class EmployeeDAOImpl implements EmployeeDAO{
         // return the result
         return employees;
     }
+
+    @Override
+    public Employee findById(int theId) {
+        // get the employee
+        Employee theEmployee = entityManager.find(Employee.class, theId);
+        // return the employee
+        return theEmployee;
+    }
+
+    @Override
+    public Employee save(Employee theEmployee) {
+        // save or update the employee (depending on theEmployee id - 0/!0)
+        Employee dbEmployee = entityManager.merge(theEmployee);
+        // return the dbEmployee
+        return dbEmployee;
+    }
+
+    @Override
+    public void deleteById(int theId) {
+        // find the employee by id
+        Employee theEmployee = entityManager.find(Employee.class, theId);
+        // remove the employee
+        entityManager.remove(theEmployee);
+    }
+
+
 }
