@@ -18,17 +18,23 @@ public class EmployeeRESTController {
         this.employeeService = employeeService;
     }
 
-    // expose "/employees" and return a list of employees
+    // Expose "/employees" and return a list of employees
     @GetMapping("/employees")
     public List<Employee> findAll() {
         return employeeService.findAll();
     }
 
     // Get employee by their id
-    // add mapping for GET /employees/{employeeId}
+    // Add mapping for GET /employees/{employeeId}
     @GetMapping("/employees/{employeeId}")
     public Employee findById(@PathVariable int employeeId) {
-        return employeeService.findById(employeeId);
+        Employee theEmployee = employeeService.findById(employeeId);
+
+        if(theEmployee == null){
+            throw new RuntimeException("Employee id is not found - " + employeeId);
+        }
+
+        return theEmployee;
     }
 
     // Create new employee
@@ -41,6 +47,7 @@ public class EmployeeRESTController {
         //In databases with auto-generated primary keys, setting id = 0 signals that this
         // is a new record.
         theEmployee.setId(0);
+
         return employeeService.save(theEmployee);
 
     }
@@ -48,7 +55,21 @@ public class EmployeeRESTController {
     // add mapping for PUT /employees - update existing employee
     @PutMapping("/employees")
     public Employee updateEmployee(@RequestBody Employee theEmployee) {
+
         return employeeService.save(theEmployee);
     }
 
+    // add mapping fot DELETE /employees/{employeeId} - delete existing employee
+    @DeleteMapping("/employees/{employeeId}")
+    public String deleteEmployee(@PathVariable int employeeId) {
+        Employee tempEmployee = employeeService.findById(employeeId);
+
+        if (tempEmployee == null) {
+            throw new RuntimeException("Employee id not found - " + employeeId);
+        }
+
+        employeeService.deleteById(employeeId);
+
+        return "Deleted employee id - " + employeeId;
+    }
 }
