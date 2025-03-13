@@ -24,6 +24,10 @@ public class EmployeeDAOImpl implements EmployeeDAO{
     @Override
     public List<Employee> findAll() {
         // create a query
+        // "from Employee" → This is JPQL (Java Persistence Query Language). It means:
+        //"Select all records from the Employee table"
+        // Employee.class → This tells JPA that we expect results as Employee objects.
+        // TypedQuery<Employee> → This means the query will return a list of Employee objects.
         TypedQuery<Employee> theQuery = entityManager.createQuery(
                 "from Employee", Employee.class);
 
