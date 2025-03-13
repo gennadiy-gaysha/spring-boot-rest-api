@@ -3,9 +3,7 @@ package com.rest.api.crud.controller;
 import com.rest.api.crud.entity.Employee;
 import com.rest.api.crud.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,4 +23,26 @@ public class EmployeeRESTController {
     public List<Employee> findAll(){
         return employeeService.findAll();
     }
+
+    // Get employee by their id
+    // add mapping for GET /employees/{employeeId}
+    @GetMapping("/employees/{employeeId}")
+    public Employee findById(@PathVariable int employeeId){
+        return employeeService.findById(employeeId);
+    }
+
+    // Create new employee
+    // add mapping for POST /employees
+    @PostMapping("/employees")
+    // Tells Spring to convert the incoming JSON request body into an Employee object.
+    // This allows the method to accept employee data from the client.
+    Employee addEmployee(@RequestBody Employee theEmployee){
+        // This ensures that a new employee is created instead of updating an existing one.
+        //In databases with auto-generated primary keys, setting id = 0 signals that this
+        // is a new record.
+        theEmployee.setId(0);
+        Employee dbEmployee = employeeService.save(theEmployee);
+        return dbEmployee;
+    }
+
 }
