@@ -12,6 +12,9 @@ public class CrudApplication {
 		System.setProperty("DB_USERNAME", dotenv.get("DB_USERNAME"));
 		System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
 
+		System.setProperty("SECURITY_USERNAME", dotenv.get("SECURITY_USERNAME"));
+		System.setProperty("SECURITY_PASSWORD", dotenv.get("SECURITY_PASSWORD"));
+
 		SpringApplication.run(CrudApplication.class, args);
 	}
 }
