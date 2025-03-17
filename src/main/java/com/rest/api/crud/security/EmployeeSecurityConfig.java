@@ -17,6 +17,7 @@ public class EmployeeSecurityConfig {
     // Load environment variables
     private final Dotenv dotenv = Dotenv.load();
 
+    // Hard-coded user accounts(((
     @Bean
     // InMemoryUserDetailsManager is a class in Spring Security that stores
     // user details in memory (RAM) instead of a database. Used for testing or
@@ -69,7 +70,8 @@ public class EmployeeSecurityConfig {
         http.httpBasic(Customizer.withDefaults());
 
         // disable Cross Site Request Forgery (CSRF)
-        // in general, not required for stateless REST APIs that use POST, PUT, DELETE and/or PATCH
+        // in general, not required for stateless REST APIs that use POST, PUT, DELETE
+        // and/or PATCH
         http.csrf(csrf -> csrf.disable());
 
         return http.build();

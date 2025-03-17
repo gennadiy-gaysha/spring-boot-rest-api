@@ -111,3 +111,142 @@ public static void main(String[] args) {
 6. The **list of employees** is returned to the controller, converted into a JSON response, and sent back to the client.
 
 By following this sequence, Spring manages the creation, dependency injection, and lifecycle of the beans (`EmployeeDAOImpl` and `EmployeeRESTController`) to ensure the system works smoothly and the necessary data is fetched from the database and returned as a response to the client.
+
+### 🔗 **Connection Between Spring Security and JDBC**
+Spring Security can integrate with **JDBC (Java Database Connectivity)** to **authenticate users and manage roles** using a database instead of hardcoded values (like `InMemoryUserDetailsManager`). This means user credentials and roles are stored in a **relational database (MySQL, PostgreSQL, etc.)** instead of memory.
+
+---
+
+## **🛠 How It Works**
+1. **User tries to log in** → Spring Security sends the username & password to the database.
+2. **Spring Security queries the DB** to check if the user exists and gets the **password & roles**.
+3. **Password verification** happens (e.g., bcrypt hashing).
+4. **If valid, access is granted** based on roles.
+5. **If invalid, access is denied** (401 Unauthorized).
+
+---
+
+## **🚀 Implementing Spring Security with JDBC**
+### 1️⃣ **Database Setup**
+It is needed two tables:
+- **Users Table (`users`)** → Stores usernames & encrypted passwords.
+- **Roles Table (`authorities`)** → Stores user roles.
+
+#### 📌 **SQL Script (Example: MySQL)**
+```sql
+DROP TABLE IF EXISTS `authorities`;
+DROP TABLE IF EXISTS `users`;
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `username` varchar(50) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  `enabled` tinyint NOT NULL,
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `authorities`
+--
+
+CREATE TABLE `authorities` (
+  `username` varchar(50) NOT NULL,
+  `authority` varchar(50) NOT NULL,
+  UNIQUE KEY `authorities_idx_1` (`username`,`authority`),
+  CONSTRAINT `authorities_ibfk_1` FOREIGN KEY (`username`) REFERENCES `users` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+```
+
+#### 📌 **Insert Sample Data**
+```sql
+--
+-- Inserting data for table `users`
+--
+
+INSERT INTO `users`
+VALUES
+('john','{noop}test123',1),
+('mary','{noop}test123',1),
+('susan','{noop}test123',1);
+
+--
+-- Inserting data for table `authorities`
+--
+
+INSERT INTO `authorities`
+VALUES
+('john','ROLE_EMPLOYEE'),
+('mary','ROLE_EMPLOYEE'),
+('mary','ROLE_MANAGER'),
+('susan','ROLE_EMPLOYEE'),
+('susan','ROLE_MANAGER'),
+('susan','ROLE_ADMIN');
+```
+---
+
+### 2️⃣ **Spring Security Configuration (Using JDBC)**
+Now, configure Spring Security to use **JDBC authentication** instead of in-memory users.
+
+```java
+package com.rest.api.crud.security;
+
+import javax.sql.DataSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.jdbc.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class EmployeeSecurityConfig {
+
+    @Bean
+    public JdbcUserDetailsManager userDetailsManager(DataSource dataSource) {
+        // Uses Spring Security default queries
+        return new JdbcUserDetailsManager(dataSource);
+    }
+
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(configurer -> configurer
+                        .requestMatchers("/api/members").hasRole("USER")
+                        .requestMatchers("/api/members/**").hasRole("USER")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                )
+                .httpBasic(Customizer.withDefaults())  // Basic Auth
+                .csrf(csrf -> csrf.disable());  // Disable CSRF for REST APIs
+        return http.build();
+    }
+}
+```
+
+---
+
+### **3️⃣ How Does This Work?**
+- **`JdbcUserDetailsManager`** → Automatically queries the **users and authorities** tables.
+- **Default Queries**:
+  - To get the user:
+    ```sql
+    SELECT username, password, enabled FROM users WHERE username = ?;
+    ```
+  - To get roles:
+    ```sql
+    SELECT username, authority FROM authorities WHERE username = ?;
+    ```
+- **Uses JDBC DataSource** to connect with the database.
+
+---
+
+## **✨ Benefits of Using JDBC Authentication**
+✅ **No Hardcoded Credentials** (users stored in a database)  
+✅ **Scalability** (supports many users, not limited to memory)  
+✅ **Better Security** (can store hashed passwords with bcrypt)  
+✅ **Easily Extendable** (custom queries, integrate with external DBs)
+
+Would you like me to help you implement **password encryption (bcrypt)** for stronger security? 🔐😊
