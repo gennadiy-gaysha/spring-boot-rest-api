@@ -30,6 +30,13 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+		<!-- MySQL: Add Database Support to Maven POM file -->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 		<!--Add security dependence -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
