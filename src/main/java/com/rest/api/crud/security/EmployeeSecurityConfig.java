@@ -20,10 +20,25 @@ public class EmployeeSecurityConfig {
     // Add support for JDBC - configuring Spring Security to use JDBC authentication
     // instead of in-memory users:
 
-    @Bean
+    /*@Bean
     public JdbcUserDetailsManager userDetailsManager(DataSource dataSource) {
         // Tell Spring Security to use JDBC authentication with datasource from sql script
         return new JdbcUserDetailsManager(dataSource);
+    }*/
+
+    @Bean
+    public JdbcUserDetailsManager userDetailsManager(DataSource dataSource) {
+        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+
+        // define query to retrieve a user by username (how to find users)
+        jdbcUserDetailsManager.setUsersByUsernameQuery(
+                "select user_id, pw, active from members where user_id=?");
+
+        // define query to retrieve the authorities/roles be username (how to find roles)
+        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
+                "select user_id, role from roles where user_id=?");
+
+        return jdbcUserDetailsManager;
     }
 
     @Bean
